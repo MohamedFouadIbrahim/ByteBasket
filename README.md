@@ -22,43 +22,31 @@
    npx uri-scheme open "bytebasket://product/3" --android
    ```
 
-## Folders and files Architecture
+# ByteBasket
 
-   This project use feature-based architecture:
-      we can think like every feature home,categiores,products,et.. as indiviual core (separation of concerns)
-   
-   bytebasket/src
-      assets: all project assets (images, fonts, etc.)
-      components: app components (shared components that can be used globally in the app)
-      constants: static values used globally in the app (colors, fonts, names, etc.)
-      features: application features as mentioned above
-         - feature-1/
-            - components: feature-1 components (used only in feature-1)
-            - hooks: feature-1 hooks (used only in feature 1)
-            - screens: feature-1 screens (anything shown as a screen for feature-1)
-            - services: services or API calls for feature 1 (getProducts, etc.)
-            - types: types only for feature 1
-      hooks: app hooks (shared hooks used globally in the app, e.g., useThemeColor)
-      navigation: holds all navigation declarations and how navigation works
-      redux: all Redux implementation, including slices and store configuration
-      services: services not related to a specific feature
-      types: types for general purpose
-      utils: utilities used across the app
-      screenshots: screenshots for the app incuding (iOS, Web,Android) 
+## Folders and File Architecture
 
-## Screenshots
+This project uses a **feature-based architecture**. Each feature (Home, Categories, Products, etc.) is treated as an independent module to improve **separation of concerns**, scalability, and maintainability.
 
-   iOS:
-      (src/screenshots/iOS/Simulator Screenshot - iPhone 16 Pro - 2026-01-02 at 12.20.11.png)
-      (src/screenshots/iOS/Simulator Screenshot - iPhone 16 Pro - 2026-01-02 at 12.20.20.png)
-      (src/screenshots/iOS/Simulator Screenshot - iPhone 16 Pro - 2026-01-02 at 12.20.29.png)
-      (src/screenshots/iOS/Simulator Screenshot - iPhone 16 Pro - 2026-01-02 at 12.21.00.png)
-   Android:
-      (src/screenshots/android/Fav_Android.png.png)
-      (src/screenshots/android/Home_Android.png)
-      (src/screenshots/android/Search_Android.png)
-   web:
-      (src/screenshots/web/Screenshot 2026-01-02 at 12.00.13 PM.png)
-      (src/screenshots/web/Screenshot 2026-01-02 at 12.00.48 PM.png)
-      (src/screenshots/web/Screenshot 2026-01-02 at 12.01.09 PM.png)
-      (src/screenshots/web/Screenshot 2026-01-02 at 12.01.29 PM.png)
+### Project Structure
+
+```txt
+bytebasket/
+  src/
+    assets/         # Project assets (images, fonts, etc.)
+    components/     # Shared UI components used across the app
+    constants/      # Global constants (colors, fonts, strings, etc.)
+    features/       # Feature modules (domain-based)
+      feature-1/
+        components/ # Feature-specific components (used only here)
+        hooks/      # Feature-specific hooks
+        screens/    # Feature screens (UI routes/pages)
+        services/   # Feature services / API calls (e.g., getProducts)
+        types/      # Feature-specific TypeScript types
+    hooks/          # Shared hooks (e.g., useThemeColor)
+    navigation/     # Navigation setup and route definitions
+    redux/          # Redux store + slices + configuration
+    services/       # Shared services not tied to a specific feature
+    types/          # Shared/global TypeScript types
+    utils/          # Shared utility functions/helpers
+    screenshots/    # App screenshots (iOS, Android, Web)
