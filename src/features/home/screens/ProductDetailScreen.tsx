@@ -3,24 +3,91 @@ import { Colors } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/types";
 import { toggleFavorite } from "@/redux/favorites.store";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { fetchProducts } from "@/redux/products.store";
+import { shareProduct } from "@/utils";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useMemo, useState } from "react";
-import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { ActivityIndicator, Alert, AppState, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Product } from "../types/products.types";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetail'>;
 
-export function ProductDetailScreen({ route, navigation }: Props) {
-    const { product: routeProduct } = route.params;
+export function ProductDetailScreen({ route }: Props) {
+    const navigation = useNavigation()
+    const { product: routeProduct, productId } = route.params;
     const [product, setProduct] = useState<Product | null>(routeProduct || null);
+    const [loading, setLoading] = useState(!routeProduct);
     const [quantity, setQuantity] = useState(1);
     const dispatch = useAppDispatch();
     const products = useAppSelector((state) => state.products.products);
     const favorites = useAppSelector((state) => state.favorites.favorites);
+    const isAppReady = useRef(AppState.currentState === 'active');
+    // Handle deep link: fetch product by ID from Redux store
+    useEffect(() => {
+        if (productId && !routeProduct) {
+            // Try to find product in Redux store
+            const foundProduct = products.find(p => p.id === productId);
 
-     const isFavorite = useMemo(
+            if (foundProduct) {
+                setProduct(foundProduct);
+                setLoading(false);
+            } else {
+                // If products not loaded yet, dispatch fetch
+                 if (products.length === 0) {
+                    setLoading(true);
+                    dispatch(fetchProducts())
+                        .unwrap()
+                        .then((fetchedProducts) => {
+                            // Use the fetched products, not the stale 'products' from closure
+                            const prod = fetchedProducts.find((p: Product) => p.id === productId);
+                            if (prod) {
+                                setProduct(prod);
+                            } else {
+                                // Product not found - show error only if app was ready
+                                if (isAppReady.current) {
+                                    Alert.alert(
+                                        'Product Not Found',
+                                        'The product you are looking for could not be found.',
+                                        [{ text: 'OK', onPress: () => navigation.goBack() }]
+                                    );
+                                }
+                            }
+                            setLoading(false);
+                        })
+                        .catch((error) => {
+                            console.error('Failed to fetch products:', error);
+                            setLoading(false);
+                        });
+                } else {
+                    // Products loaded but product not found
+                    Alert.alert(
+                        'Product Not Found',
+                        'The product you are looking for could not be found.',
+                        [{ text: 'OK', onPress: () => navigation.goBack() }]
+                    );
+                    setLoading(false);
+                }
+            }
+        }
+    }, [productId, routeProduct, products, dispatch, navigation]);
+
+    const handleShare = async () => {
+        if (!product) return;
+
+        await shareProduct({
+            product,
+            onSuccess: () => {
+                console.log('Product shared successfully');
+            },
+            onError: (error) => {
+                Alert.alert('Share Failed', error.message);
+            },
+        });
+    };
+    const isFavorite = useMemo(
         () => product ? favorites.some((item) => item.id === product.id) : false,
         [favorites, product]
     );
@@ -35,6 +102,18 @@ export function ProductDetailScreen({ route, navigation }: Props) {
     const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
 
 
+    // Show loading state while fetching product from deep link
+    if (loading) {
+        return (
+            <Container edges={['bottom']}>
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={Colors.default.Primary} />
+                    <Text style={styles.loadingText}>Loading product...</Text>
+                </View>
+            </Container>
+        );
+    }
+    
     // Safety check
     if (!product) {
         return null;
@@ -61,7 +140,7 @@ export function ProductDetailScreen({ route, navigation }: Props) {
 
                 {/* Action Buttons */}
                 <View style={styles.actionButtons}>
-                    <TouchableOpacity style={styles.actionButton}>
+                    <TouchableOpacity style={styles.actionButton} onPress={handleShare} >
                         <Ionicons name="share-social-outline" size={20} color="#333" />
                     </TouchableOpacity>
                     <TouchableOpacity

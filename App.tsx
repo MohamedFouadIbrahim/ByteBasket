@@ -1,5 +1,6 @@
 import { RootNavigator } from '@/navigation';
 import createStore from "@/redux/store";
+import { linkingConfig } from '@/utils';
 import { NavigationContainer } from '@react-navigation/native';
 import * as React from 'react';
 import { Provider } from "react-redux";
@@ -11,7 +12,7 @@ export default function App() {
   return (
     <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-            <NavigationContainer>
+            <NavigationContainer linking={linkingConfig} >
                 <RootNavigator />
             </NavigationContainer>
         </PersistGate>
