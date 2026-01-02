@@ -1,7 +1,9 @@
 import { ThemedText } from "@/components";
 import { Colors } from "@/constants/theme";
+import { toggleFavorite } from "@/redux/favorites.store";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { Image, Platform, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Product } from "../types/Product";
 
@@ -11,7 +13,15 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onPress }: ProductCardProps) {
-    const isFavorite = false
+    const dispatch = useAppDispatch();
+    const favorites = useAppSelector((state) => state.favorites.favorites);
+
+    const isFavorite = useMemo(() => favorites.some((item) => item.id === product.id),[favorites, product.id]);
+    
+    const handleToggleFavorite = useCallback((e: any)=>{
+        e.stopPropagation();
+        dispatch(toggleFavorite(product));
+    },[dispatch])
     
     return (
         <Pressable
@@ -33,6 +43,7 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
                     
                 <TouchableOpacity
                     style={styles.favoriteButton}
+                    onPress={handleToggleFavorite}
                 >
                 <Ionicons
                     name={isFavorite ? "heart" : "heart-outline"}

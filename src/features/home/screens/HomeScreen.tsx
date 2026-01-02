@@ -1,20 +1,22 @@
 import { Container } from "@/components";
 import React, { useMemo, useState } from "react";
-import { FlatList, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, Platform, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 
   
 export function HomeScreen() {
     const { products, searchProducts } = useProducts()
-    const [searchQuery, setSearchQuery] = useState('')
+    const [searchQuery, setSearchQuery] = useState('')    
+    const { width } = useWindowDimensions()
     
-
     const filteredProducts = useMemo(() => {
        return searchProducts(searchQuery)
     }, [products, searchQuery]);
 
-    const isTwoColumn = false
+    const isTwoColumn = useMemo(() => {
+        return Platform.OS === 'web' && width >= 768;
+    }, [width]);
 
     return (
         <Container>
