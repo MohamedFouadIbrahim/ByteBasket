@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useMemo } from "react";
 import { Image, Platform, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Product } from "../types/Product";
+import { Product } from "../types/products.types";
 
 interface ProductCardProps {
     product: Product;

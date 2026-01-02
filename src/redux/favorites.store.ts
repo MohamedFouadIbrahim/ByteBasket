@@ -1,4 +1,4 @@
-import type { Product } from '@/features/home/types/Product';
+import type { Product } from '@/features/home/types/products.types';
 import { createSlice } from '@reduxjs/toolkit';
 
 type FavoritesType = {

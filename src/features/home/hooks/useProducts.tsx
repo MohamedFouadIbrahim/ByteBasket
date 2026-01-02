@@ -1,4 +1,4 @@
-import type { Product } from '@/features/home/types/Product';
+import type { Product } from '@/features/home/types/products.types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchProducts } from '@/redux/products.store';
 import { useCallback, useEffect } from 'react';
