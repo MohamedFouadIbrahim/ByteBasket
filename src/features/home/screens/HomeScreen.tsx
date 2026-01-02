@@ -1,15 +1,19 @@
 import { Container } from "@/components";
+import { RootStackParamList } from "@/navigation/types";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useMemo, useState } from "react";
 import { FlatList, Platform, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
   
 export function HomeScreen() {
     const { products, searchProducts } = useProducts()
     const [searchQuery, setSearchQuery] = useState('')    
     const { width } = useWindowDimensions()
-    
+    const navigation = useNavigation<HomeScreenNavigationProp>()
     const filteredProducts = useMemo(() => {
        return searchProducts(searchQuery)
     }, [products, searchQuery]);
@@ -33,9 +37,11 @@ export function HomeScreen() {
                 <FlatList
                     data={filteredProducts}
                     renderItem={({ item }) => (
-                        <ProductCard product={item}
-                        onPress={()=>{
-                        }}
+                        <ProductCard 
+                            product={item}
+                            onPress={()=>{
+                                navigation.navigate('ProductDetail', { product: item })
+                            }}
                         />
                     )}
                     keyExtractor={(item) => item.id}
