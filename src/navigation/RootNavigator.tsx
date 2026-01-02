@@ -1,4 +1,5 @@
 
+import { ProductDetailScreen } from '@/features/home/screens/ProductDetailScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TabNavigator } from './TabNavigator';
 import { RootStackParamList } from './types';
@@ -12,6 +13,11 @@ export const RootNavigator = () => {
         name="Main"
         component={TabNavigator}
         options={{ headerShown: false, headerTitle:'' }}
+      />
+      <Stack.Screen 
+        name="ProductDetail" 
+        component={ProductDetailScreen} 
+        options={{ headerTitle:'' }} 
       />
     </Stack.Navigator>
   );
